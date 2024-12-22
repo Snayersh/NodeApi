@@ -48,7 +48,7 @@ const Productos = sequelize.define(
       allowNull: false,
     },
     fecha_creacion: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       defaultValue: DataTypes.NOW,
       allowNull: true,
     },

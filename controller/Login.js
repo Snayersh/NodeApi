@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs");
-const { usuarios } = require("../models/modelUsuario");
+const  usuarios  = require("../models/modelUsuario");
 const jwt = require("jsonwebtoken");
 
 // Iniciar sesión

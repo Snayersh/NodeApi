@@ -2,7 +2,7 @@ const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../config/database");
 
 const Usuario = sequelize.define(
-  "Usuario",
+  "usuarios",
   {
     idusuarios: {
       type: DataTypes.INTEGER,
@@ -12,12 +12,11 @@ const Usuario = sequelize.define(
     },
     rol_idrol: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-      defaultValue: 2 , // Por defecto sería cliente
+      allowNull: false,
     },
     estados_idestados: {
       type: DataTypes.INTEGER,
-      
+
       allowNull: true,
       defaultValue: 3, // Por defecto sería pendiente estando en pendiente tienen que validar por correo
     },
@@ -46,7 +45,6 @@ const Usuario = sequelize.define(
     fecha_nacimiento: {
       type: DataTypes.DATEONLY,
       allowNull: true,
-      
     },
     fecha_creacion: {
       type: DataTypes.DATEONLY,
@@ -57,13 +55,13 @@ const Usuario = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    Verificacion_token:{
+    Verificacion_token: {
       type: DataTypes.STRING,
-      allowNull : true,
-      validate:{
-        notEmpty:true,
+      allowNull: true,
+      validate: {
+        notEmpty: true,
       },
-    }
+    },
   },
   {
     tableName: "usuarios",

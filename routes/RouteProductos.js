@@ -13,9 +13,9 @@ const {
   actualizarproducto,
   eliminarproducto,
 } = require("../controller/producto");
-// verificartoken, tokenoperadores,
+
 //registrar un nuevo producto
-router.post("/Productos", registrarproducto);
+router.post("/Productos", verificartoken, tokenoperadores,registrarproducto);
 //ruta para obtener todos los productos no se coloca token para poder ver producto sin inciar sesion
 router.get("/Productos", obtenerproductos);
 //ruta para obtener producto con por id no se coloca token para poder ver producto sin inciar sesion

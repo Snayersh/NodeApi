@@ -14,8 +14,9 @@ exports.registrarUsuario = async (req, res) => {
     fecha_nacimiento,
     Clientes_idClientes,
   } = req.body;
-  if(correo_electronico){
-    return res.status(400).json({error:"El correo ya esta en uso"})
+  const ExisteCorre = await Usuario.findOne({ where: { correo_electronico } });
+  if (ExisteCorre) {
+    return res.status(400).json({ error: "El correo ya está en uso" });
   }
   if (!password || password.length < 5) {
     return res.status(400).json({ error: "Contrase;a muy corta" });
