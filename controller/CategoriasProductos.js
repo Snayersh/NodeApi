@@ -1,6 +1,4 @@
-const { where } = require("sequelize");
-
-const CategoriaP = requiere("../models/modelCategoriaProductos.js");
+const CategoriaP = require("../models/modelCategoriaProductos.js");
 
 //Registrar una categoria producto
 exports.registrarcategoria = async (req, res) => {
@@ -24,11 +22,9 @@ exports.obtenercategoria = async (req, res) => {
     const categoria = await CategoriaP.findAll();
     res.status(200).json({ categoria });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        error: "Error al obtener todas las categorias de los productos",
-      });
+    res.status(500).json({
+      error: "Error al obtener todas las categorias de los productos",
+    });
   }
 };
 
@@ -79,7 +75,7 @@ exports.eliminarcategoria = async (req, res) => {
       where: { idCategoriaProductos: id },
     });
     if (!categoria) {
-      return res.statu(400).json({ mensaje: "Categorina no encontrada" });
+      return res.status(400).json({ mensaje: "Categorina no encontrada" });
     }
     categoria.estados_idestados = estados_idestados;
     await categoria.save();

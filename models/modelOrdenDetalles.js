@@ -2,7 +2,7 @@ const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../config/database");
 
 const OrdenDetalles = sequelize.define(
-  "Orden",
+  "OrdenDetalles",
   {
     idOrdenDetalles: {
       type: DataTypes.INTEGER,

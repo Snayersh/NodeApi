@@ -1,9 +1,12 @@
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const Usuario = require("../models/modelUsuario");
+const nodemailer = require("nodemailer");
 
 // Registrar un usuario
 exports.registrarUsuario = async (req, res) => {
   const {
+    rol_idrol,
     correo_electronico,
     nombre_completo,
     password,
@@ -11,22 +14,48 @@ exports.registrarUsuario = async (req, res) => {
     fecha_nacimiento,
     Clientes_idClientes,
   } = req.body;
-
+  if(correo_electronico){
+    return res.status(400).json({error:"El correo ya esta en uso"})
+  }
   if (!password || password.length < 5) {
     return res.status(400).json({ error: "Contrase;a muy corta" });
   }
+  
   try {
     // hash de la contrase;a
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    //Generando token 
+    const generartoken = crypto.randomBytes(32).toString("hex");
+
     //creacion de usuario para la base de datos
     await Usuario.create({
+      rol_idrol,
       correo_electronico,
       nombre_completo,
       password: hashedPassword,
       telefono,
       fecha_nacimiento,
       Clientes_idClientes,
+      Verificacion_token: generartoken,
+    });
+    const correoverificacion = `http://localhost:3000/api/validar?token=${generartoken}`;
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      port:465,
+      secure:true,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"Mi tiendita online" <noreply@mitiendita.com>`,
+      to: correo_electronico,
+      subject: "Verificacion Cuenta",
+      html: `<p>hola ${nombre_completo},</p>   <p><a href="${correoverificacion}">Verificar Cuenta</a></p>`,
     });
 
     res.status(201).json({ mensaje: "Usuario registrado con éxito" });
@@ -62,13 +91,14 @@ exports.obtenerusuarioId = async (req, res) => {
 //Actualizar un usuario
 exports.actualizarusuario = async (req, res) => {
   const { id } = req.params;
-  const { correo_electronico, nombre_completo, password, telefono } = req.body;
+  const { rol_idrol,correo_electronico, nombre_completo, password, telefono } = req.body;
 
   try {
     const usuario = await Usuario.findOne({ where: { idusuario: id } });
     if (!usuario) {
       return res.status(400).json({ error: "Usuario no encontrado" });
     }
+    if(rol_idrol) usuario.rol_idrol = rol_idrol;
     if (correo_electronico) usuario.correo_electronico = correo_electronico;
     if (nombre_completo) usuario.nombre_completo = nombre_completo;
     if (password) {
@@ -88,7 +118,7 @@ volviendolo estado inactivo */
 
 exports.eliminarusuario = async (req, res) => {
   const { id } = req.params;
-  const  estados_idestados  = 2; //Inactivar
+  const estados_idestados = 2; //Inactivar
   try {
     const usuario = await Usuario.findOne({ where: { idusuarios: id } });
     if (!usuario) {

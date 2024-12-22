@@ -13,7 +13,7 @@ const Usuario = sequelize.define(
     rol_idrol: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: , // Por defecto sería cliente
+      defaultValue: 2 , // Por defecto sería cliente
     },
     estados_idestados: {
       type: DataTypes.INTEGER,
@@ -57,6 +57,13 @@ const Usuario = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    Verificacion_token:{
+      type: DataTypes.STRING,
+      allowNull : true,
+      validate:{
+        notEmpty:true,
+      },
+    }
   },
   {
     tableName: "usuarios",

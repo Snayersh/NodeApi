@@ -1,4 +1,4 @@
-const { Clientes } = require("../models/modelCliente");
+const  Clientes  = require("../models/modelCliente");
 
 exports.registrarClientes = async (req, res) => {
   const { razon_social, nombre_comercial, direccion_entrega, telefono, email } =

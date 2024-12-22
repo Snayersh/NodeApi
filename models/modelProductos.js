@@ -2,9 +2,9 @@ const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../config/database");
 
 const Productos = sequelize.define(
-  "Orden",
+  "Productos",
   {
-    idProductos: {
+    idProdcutos: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -12,42 +12,51 @@ const Productos = sequelize.define(
     },
 
     CategoriaProductos_idCategoriaProducto: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-  
-    usuarios_idusuarios: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
 
-    nombre_completo: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      marca:{
-        type:DataTypes.STRING,
-        allowNull:true,
-      },
-      codigo:{
-        type:DataTypes.STRING,
-        allowNull:true,
-      },
+    usuario_idusuario: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+
+    nombre: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    marca: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    codigo: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
+    stock: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     estados_idestados: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
 
+    precio: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
     fecha_creacion: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
       allowNull: true,
     },
-
-    foto:{
-        type:DataTypes.STRING,
-        allowNull:true,
-        }, },
+    foto: {
+      type: DataTypes.BLOB("long"),
+      allowNull: true,
+    },
+  },
 
   {
     tableName: "Productos",
@@ -68,7 +77,6 @@ Productos.associate = (models) => {
     foreignKey: "estados_idestados",
     as: "estados",
   });
-
 };
 
 module.exports = Productos;
