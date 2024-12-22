@@ -9,7 +9,7 @@ const {
 const {
   registrarproducto,
   obtenerproductos,
-  obtenerproductoid,
+  obtenerproductonombre,
   actualizarproducto,
   eliminarproducto,
 } = require("../controller/producto");
@@ -19,7 +19,7 @@ router.post("/Productos", verificartoken, tokenoperadores,registrarproducto);
 //ruta para obtener todos los productos no se coloca token para poder ver producto sin inciar sesion
 router.get("/Productos", obtenerproductos);
 //ruta para obtener producto con por id no se coloca token para poder ver producto sin inciar sesion
-router.get("/Productos/:id", obtenerproductoid);
+router.get("/Productos/:nombre", obtenerproductonombre);
 //ruta para actualizar solo operadores
 router.put(
   "/Productos/:id",

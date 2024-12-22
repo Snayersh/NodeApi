@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const Productos = require("../models/modelProductos");
 
 //Registrar un nuevo producto
@@ -41,14 +42,21 @@ exports.obtenerproductos = async (req, res) => {
     res.status(500).json({ error: "Error al obtener todos los productos" });
   }
 };
-//obtener producto por id
-exports.obtenerproductoid = async (req, res) => {
-  const { id } = req.params;
+//obtener producto por nombre
+exports.obtenerproductonombre = async (req, res) => {
+  const { nombre } = req.params;
   try {
-    const productos = await Productos.findOne({ where: { idProdcutos: id } });
-    if (!productos) {
-      return res.status(404).json({ error: "producto no encontrado" });
+    if (!nombre) {
+      return res.status(400).json({ error: "Ingresa un nombre del producto" });
     }
+    const productos = await Productos.findAll({
+      where: {
+        [Op.or]: [
+          { nombre: { [Op.like]: `%${nombre}%` } },
+          { marca: { [Op.like]: `%${nombre}%` } },
+        ],
+      },
+    });
     res.status(200).json({ productos });
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el producto por id" });
@@ -77,8 +85,7 @@ exports.actualizarproducto = async (req, res) => {
     if (CategoriaProductos_idCategoriaProducto)
       productos.CategoriaProductos_idCategoriaProducto =
         CategoriaProductos_idCategoriaProducto;
-    if (usuario_idusuario)
-      productos.usuario_idusuario = usuario_idusuario;
+    if (usuario_idusuario) productos.usuario_idusuario = usuario_idusuario;
     if (nombre) productos.nombre = nombre;
     if (marca) productos.marca = marca;
     if (codigo) productos.codigo = codigo;
