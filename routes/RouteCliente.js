@@ -16,10 +16,7 @@ const {
 
 //ruta para registrar un nuevo cliente
 router.post(
-  "/Clientes",
-  verificartoken,
-  tokenoperadorycliente,
-  registrarClientes
+  "/Clientes",  registrarClientes
 );
 //Ruta para obtener todos los clientes
 router.get("/Clientes", verificartoken, tokenoperadores, obtenerclientes);

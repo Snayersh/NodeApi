@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
-const  usuarios  = require("../models/modelUsuario");
+const usuarios = require("../models/modelUsuario");
 const jwt = require("jsonwebtoken");
+const Usuario = require("../models/modelUsuario");
 
 // Iniciar sesión
 exports.iniciarSesion = async (req, res) => {
@@ -28,10 +29,20 @@ exports.iniciarSesion = async (req, res) => {
     if (!comparacion) {
       return res.status(401).json({ error: "contrase;a incorrecta" });
     }
-    const token = jwt.sign({ id: usuario.idusuarios }, process.env.JWT_SECRET, {
-      expiresIn: "1H",
+    const token = jwt.sign(
+      { id: usuario.idusuarios, rol_idrol: usuario.rol_idrol, Clientes_idClientes: usuario.Clientes_idClientes, nombre_completo : usuario.nombre_completo, direccion: usuario.direccion, telefono: usuario.telefono, correo_electronico : usuario.correo_electronico },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1H",
+      }
+    );
+    return res.status(200).json({
+      mensaje: "Inicio de sesión exitoso",
+      token,
+      rol_idrol: usuario.rol_idrol,
+      idusuarios: usuario.idusuarios,
+      Clientes_idClientes:  usuario.Clientes_idClientes
     });
-    return res.status(200).json({ mensaje: "Inicio de sesión exitoso", token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al iniciar sesión" });

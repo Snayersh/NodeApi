@@ -1,5 +1,6 @@
 const { Op } = require("sequelize");
 const Productos = require("../models/modelProductos");
+const sequelize = require('../config/database')
 
 //Registrar un nuevo producto
 exports.registrarproducto = async (req, res) => {
@@ -16,7 +17,21 @@ exports.registrarproducto = async (req, res) => {
   } = req.body;
 
   try {
-    await Productos.create({
+    const fotoBinaria = Buffer.from(foto, 'base64'); 
+
+await sequelize.query(
+  `EXEC p_insertarProductos 
+    @categoriaProductos_idCategoriaProducto = :CategoriaProductos_idCategoriaProducto,
+    @usuario_idusuario = :usuario_idusuario,
+    @nombre = :nombre,
+    @marca = :marca,
+    @codigo = :codigo,
+    @stock = :stock,
+    @estados_idestados = :estados_idestados,
+    @precio = :precio,
+    @foto = :foto`, 
+  {
+    replacements: {
       CategoriaProductos_idCategoriaProducto,
       usuario_idusuario,
       nombre,
@@ -25,8 +40,12 @@ exports.registrarproducto = async (req, res) => {
       stock,
       estados_idestados,
       precio,
-      foto,
-    });
+      foto: fotoBinaria,  
+    },
+    type: sequelize.QueryTypes.INSERT,
+  }
+);
+
     res.status(201).json({ mensaje: "Producto registrado con exito" });
   } catch (error) {
     res.status(500).json({ error: "Error al registrar un nuevo producto" });
@@ -37,14 +56,21 @@ exports.registrarproducto = async (req, res) => {
 exports.obtenerproductos = async (req, res) => {
   try {
     const productos = await Productos.findAll();
-    res.status(200).json({ productos });
+    
+    const productosConFoto = productos.map(producto => ({
+      ...producto.toJSON(),
+      foto: producto.foto ? `data:image/jpeg;base64,${producto.foto}` : null,
+    }));
+
+    res.status(200).json(productosConFoto);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener todos los productos" });
   }
 };
+
 //obtener producto por nombre
 exports.obtenerproductonombre = async (req, res) => {
-  const { nombre } = req.params;
+  const { nombre } = req.query;
   try {
     if (!nombre) {
       return res.status(400).json({ error: "Ingresa un nombre del producto" });
@@ -57,7 +83,7 @@ exports.obtenerproductonombre = async (req, res) => {
         ],
       },
     });
-    res.status(200).json({ productos });
+    res.status(200).json( productos );
   } catch (error) {
     res.status(500).json({ error: "Error al obtener el producto por id" });
   }
@@ -77,25 +103,44 @@ exports.actualizarproducto = async (req, res) => {
     precio,
     foto,
   } = req.body;
+
   try {
-    const productos = await Productos.findOne({ where: { idProdcutos: id } });
-    if (!productos) {
-      return res.status(400).json({ error: "Producto no encontrado" });
+    const [resultado] = await sequelize.query(
+      `EXEC p_actualizarproductos 
+       @idProductos = :idProductos,
+       @categoriaProductos_idCategoriaProductos = :CategoriaProductos_idCategoriaProducto,
+       @idUsuario_idusuarios = :usuario_idusuario,
+       @nombre = :nombre,
+       @marca = :marca,
+       @codigo = :codigo,
+       @stock = :stock,
+       @estados_idestados = :estados_idestados,
+       @precio = :precio,
+       @foto = :foto`,
+      {
+        replacements: {
+          idProductos: id,
+          CategoriaProductos_idCategoriaProducto,
+          usuario_idusuario,
+          nombre,
+          marca,
+          codigo,
+          stock,
+          estados_idestados,
+          precio,
+          foto,
+        },
+        type: sequelize.QueryTypes.UPDATE,
+      }
+    );
+
+    if (!resultado) {
+      return res.status(404).json({ error: "Producto no encontrado" });
     }
-    if (CategoriaProductos_idCategoriaProducto)
-      productos.CategoriaProductos_idCategoriaProducto =
-        CategoriaProductos_idCategoriaProducto;
-    if (usuario_idusuario) productos.usuario_idusuario = usuario_idusuario;
-    if (nombre) productos.nombre = nombre;
-    if (marca) productos.marca = marca;
-    if (codigo) productos.codigo = codigo;
-    if (stock) productos.stock = stock;
-    if (estados_idestados) productos.estados_idestados = estados_idestados;
-    if (precio) productos.precio = precio;
-    if (foto) productos.foto = foto;
-    await productos.save();
+
     res.status(200).json({ mensaje: "Producto actualizado correctamente" });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Error al actualizar el producto" });
   }
 };

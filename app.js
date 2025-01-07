@@ -1,9 +1,12 @@
 const config = require("./config/database");
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 
 const validacion = require("./middlewares/verificacioncuenta");
@@ -23,24 +26,16 @@ app.get("/", (req, res) => {
 app.get("/api", (req, res) => {
   res.send("Bienvenido");
 });
-//login
 app.use("/api", login);
-//usuario
 app.use("/api", Usuario);
-//Clientes
 app.use("/api", Cliente);
-//CategoriaProductos
 app.use("/api", Categoria);
-//Producoss
 app.use("/api", Productos);
-//Orden Con detalels
 app.use("/api", OrdenDetalles);
-//Estados
 app.use("/api", Estados);
-//validar correo
 app.get("/api/validar", validacion);
 
 const port = process.env.port;
-app.listen(port);
-
-console.log(`Servidor en el puerto:${port}`);
+app.listen(port, () => {
+  console.log(`Servidor corriendo en el puerto: ${port}`);
+});

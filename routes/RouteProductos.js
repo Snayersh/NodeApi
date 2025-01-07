@@ -15,11 +15,11 @@ const {
 } = require("../controller/producto");
 
 //registrar un nuevo producto
-router.post("/Productos", verificartoken, tokenoperadores,registrarproducto);
-//ruta para obtener todos los productos no se coloca token para poder ver producto sin inciar sesion
-router.get("/Productos", obtenerproductos);
-//ruta para obtener producto con por id no se coloca token para poder ver producto sin inciar sesion
-router.get("/Productos/:nombre", obtenerproductonombre);
+router.post("/Productos",verificartoken,tokenoperadores, registrarproducto);
+//ruta para obtener todos los productos
+router.get("/Productos",verificartoken,tokenoperadorycliente,obtenerproductos);
+//ruta para obtener producto con por nombre, id o marca
+router.get("/Productos/:nombre",verificartoken,tokenoperadorycliente,obtenerproductonombre);
 //ruta para actualizar solo operadores
 router.put(
   "/Productos/:id",

@@ -19,10 +19,10 @@ router.post("/usuario", registrarUsuario);
 //Ruta para obtener todos los usuarios
 router.get("/usuario", verificartoken, tokenoperadores, obtenerusuarios);
 //ruta para obtener un usuario por id
-router.get("/usuario/:id", verificartoken, tokenoperadores, obtenerusuarioId);
+router.get("/usuario/:dato",verificartoken,tokenoperadorycliente, obtenerusuarioId);
 //ruta para actualizar un usuario por id
-router.put("/usuario/:id", verificartoken, tokenoperadores, actualizarusuario);
+router.put("/usuario/:id", verificartoken, tokenoperadorycliente, actualizarusuario);
 //ruta para inactivar un usuario por id
-router.put("/usuarioDel/:id", verificartoken, tokenoperadores, eliminarusuario);
+router.put("/usuarioDel/:id", verificartoken, tokenoperadorycliente, eliminarusuario);
 
 module.exports = router;

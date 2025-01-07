@@ -30,7 +30,7 @@ const tokenoperadores = (req, res, next) => {
 
 const tokenoperadorycliente = (req, res, next) => {
   if (req.user.rol_idrol !== 1 && req.user.rol_idrol !== 2) {
-    return res.status(403).json({ mensaje: "Acceso denegado" });
+    return res.status(403).json({ mensaje: "Acceso denegado, tienes que iniciar sesion" });
   }
   next();
 };

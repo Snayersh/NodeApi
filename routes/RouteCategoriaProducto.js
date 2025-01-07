@@ -10,7 +10,7 @@ const {
 const {
   registrarcategoria,
   obtenercategoria,
-  obtenercategoriaid,
+  obtenerCategoriaConProductos,
   actualizarcategoria,
   eliminarcategoria,
 } = require("../controller/CategoriasProductos");
@@ -23,12 +23,9 @@ router.post(
   registrarcategoria
 );
 //ruta para obtener todas las categorias no se coloca token para poder ver producto sin inciar sesion
-router.get("/CategoriaProductos", obtenercategoria);
+router.get("/CategoriaProductos",verificartoken,tokenoperadorycliente, obtenercategoria);
 //ruta para obtener categoria por id
-router.get(
-  "/CategoriaProductos/:id",
-  obtenercategoriaid
-);
+router.get("/CategoriaProductos/:id",verificartoken,tokenoperadorycliente, obtenerCategoriaConProductos);
 //ruta para actualizar una categoria
 router.put(
   "/CategoriaProductos/:id",

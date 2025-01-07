@@ -1,12 +1,9 @@
 const { json } = require("sequelize");
 const sequelize = require("../config/database");
-const orden = require("../models/modelOrden");
-const ordendetalles = require("../models/modelOrdenDetalles");
 
 //insertando una nueva orden en las dos tablas
 exports.nuevaordencondetalles = async (req, res) => {
   const {
-    usuarios_idusuarios,
     estados_idestados,
     nombre_completo,
     direccion,
@@ -17,12 +14,23 @@ exports.nuevaordencondetalles = async (req, res) => {
     detalles,
   } = req.body;
 
+  const usuarios_idusuarios = req.user.idusuarios; 
+
   try {
     const datos = await sequelize.query(
-      "EXEC NuevaOrdenConDetalles :usuarios_idusuarios, :estados_idestados, :nombre_completo, :direccion, :telefono, :correo_electronico,:fecha_entrega,:total_orden, :detalles",
+      `EXEC p_NuevaOrdenConDetalles
+      @usuarios_idusuarios = :usuarios_idusuarios,
+      @estados_idestados = :estados_idestados, 
+      @nombre_completo = :nombre_completo, 
+      @direccion =:direccion, 
+      @telefono = :telefono, 
+      @correo_electronico = :correo_electronico, 
+      @fecha_entrega = :fecha_entrega,
+      @total_orden = :total_orden, 
+      @detalles = :detalles`,
       {
         replacements: {
-          usuarios_idusuarios,
+          usuarios_idusuarios,  
           estados_idestados,
           nombre_completo,
           direccion,
@@ -42,6 +50,7 @@ exports.nuevaordencondetalles = async (req, res) => {
   }
 };
 
+
 //Actualizando solo la tabla orden
 
 exports.actualizaorden = async (req, res) => {
@@ -56,9 +65,19 @@ exports.actualizaorden = async (req, res) => {
     fecha_entrega,
     total_orden,
   } = req.body;
+
   try {
     await sequelize.query(
-      "EXEC ActualizarOrden :idOrden, :usuarios_idusuarios, :estados_idestados, :nombre_completo, :direccion, :telefono, :correo_electronico, :fecha_entrega, :total_orden",
+      `EXEC p_ActualizarOrden 
+      @idOrden = :idOrden,
+      @usuarios_idusuarios = :usuarios_idusuarios,
+      @estados_idestados = :estados_idestados, 
+      @nombre_completo = :nombre_completo, 
+      @direccion = :direccion, 
+      @telefono = :telefono, 
+      @correo_electronico = :correo_electronico, 
+      @fecha_entrega = :fecha_entrega,
+      @total_orden = :total_orden`,
       {
         replacements: {
           idOrden: id,
@@ -74,11 +93,14 @@ exports.actualizaorden = async (req, res) => {
         type: sequelize.QueryTypes.UPDATE,
       }
     );
-    res.status(200).json({ mensaje: "orden actualizada" });
+
+    res.status(200).json({ mensaje: "Orden actualizada con éxito" });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Error al actualizar la orden" });
   }
 };
+
 
 //Obtener todos los orden con sus detalles
 exports.obtenerordencondetalles = async (req, res) => {

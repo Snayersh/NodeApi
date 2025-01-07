@@ -14,7 +14,7 @@ const {
 } = require("../controller/OrdenConDetalles");
 
 //ruta para insertar una nueva orden con detalles
-router.post("/Orden", verificartoken, tokenoperadores, nuevaordencondetalles);
+router.post("/Orden", verificartoken, tokenoperadorycliente, nuevaordencondetalles);
 //ruta para actualizar una nueva orden
 router.put("/Orden/:id", verificartoken, tokenoperadores, actualizaorden);
 //ruta para listar todas las ordenes con detalles
