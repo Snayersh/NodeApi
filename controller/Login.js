@@ -41,7 +41,11 @@ exports.iniciarSesion = async (req, res) => {
       token,
       rol_idrol: usuario.rol_idrol,
       idusuarios: usuario.idusuarios,
-      Clientes_idClientes:  usuario.Clientes_idClientes
+      Clientes_idClientes:  usuario.Clientes_idClientes,
+      nombre_completo : usuario.nombre_completo,
+      direccion: usuario.direccion,
+      telefono: usuario.telefono,
+      correo_electronico : usuario.correo_electronico
     });
   } catch (error) {
     console.error(error);

@@ -1,9 +1,9 @@
 const { json } = require("sequelize");
 const sequelize = require("../config/database");
 
-//insertando una nueva orden en las dos tablas
 exports.nuevaordencondetalles = async (req, res) => {
   const {
+    usuarios_idusuarios,
     estados_idestados,
     nombre_completo,
     direccion,
@@ -14,23 +14,22 @@ exports.nuevaordencondetalles = async (req, res) => {
     detalles,
   } = req.body;
 
-  const usuarios_idusuarios = req.user.idusuarios; 
 
   try {
-    const datos = await sequelize.query(
+    await sequelize.query(
       `EXEC p_NuevaOrdenConDetalles
-      @usuarios_idusuarios = :usuarios_idusuarios,
-      @estados_idestados = :estados_idestados, 
-      @nombre_completo = :nombre_completo, 
-      @direccion =:direccion, 
-      @telefono = :telefono, 
-      @correo_electronico = :correo_electronico, 
-      @fecha_entrega = :fecha_entrega,
-      @total_orden = :total_orden, 
-      @detalles = :detalles`,
+        @usuarios_idusuarios = :usuarios_idusuarios,
+        @estados_idestados = :estados_idestados, 
+        @nombre_completo = :nombre_completo, 
+        @direccion = :direccion, 
+        @telefono = :telefono, 
+        @correo_electronico = :correo_electronico, 
+        @fecha_entrega = :fecha_entrega,
+        @total_orden = :total_orden, 
+        @detalles = :detalles`,
       {
         replacements: {
-          usuarios_idusuarios,  
+          usuarios_idusuarios,
           estados_idestados,
           nombre_completo,
           direccion,
@@ -46,13 +45,13 @@ exports.nuevaordencondetalles = async (req, res) => {
 
     res.status(201).json({ mensaje: "Orden creada con éxito" });
   } catch (error) {
-    res.status(500).json({ error: "Error al crear la orden" });
+    console.error("Error al crear la orden:", error);
+    res.status(500).json({ error: "Error al crear la orden", detalles: error.message });
   }
 };
 
 
-//Actualizando solo la tabla orden
-
+// Actualizando solo la tabla orden
 exports.actualizaorden = async (req, res) => {
   const { id } = req.params;
   const {
@@ -96,13 +95,11 @@ exports.actualizaorden = async (req, res) => {
 
     res.status(200).json({ mensaje: "Orden actualizada con éxito" });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: "Error al actualizar la orden" });
   }
 };
 
-
-//Obtener todos los orden con sus detalles
+// Obtener todas las ordenes con sus detalles
 exports.obtenerordencondetalles = async (req, res) => {
   try {
     const datos = await sequelize.query("select * from Vistaordencondetalles", {
@@ -110,10 +107,13 @@ exports.obtenerordencondetalles = async (req, res) => {
     });
     res.status(200).json({ mensaje: datos });
   } catch (error) {
-    res.status(500).json({ erro: "error al obtener las ordenes con detalles" });
+    res
+      .status(500)
+      .json({ error: "Error al obtener las ordenes con detalles" });
   }
 };
-//obtener orden con sus detalles por id
+
+// Obtener orden con sus detalles por ID
 exports.obtenerordencondetallesid = async (req, res) => {
   const { id } = req.params;
   try {
@@ -124,5 +124,49 @@ exports.obtenerordencondetallesid = async (req, res) => {
     res.status(200).json({ mensaje: datos });
   } catch (error) {
     res.status(500).json({ error: "Error al obtener la orden con detalles" });
+  }
+};
+
+// Cambiar el estado de una orden a pendiente
+exports.eliminarOrdencondetalles = async (req, res) => {
+  const { idOrden } = req.params;
+
+  try {
+    await sequelize.query(
+      `EXEC p_ActualizarEstadoPendiente @Orden_idOrden = :Orden_idOrden`,
+      {
+        replacements: { Orden_idOrden: idOrden },
+      }
+    );
+
+    res
+      .status(200)
+      .json({ mensaje: "Estado de la orden actualizado a 'Pendiente'" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Error al actualizar el estado de la orden" });
+  }
+};
+
+// Cambiar el estado de una orden a finalizado
+exports.EntregarOrdencondetalles = async (req, res) => {
+  const { idOrden } = req.params;
+
+  try {
+    await sequelize.query(
+      `EXEC p_ActualizarEstadoFinalizado @Orden_idOrden = :Orden_idOrden`,
+      {
+        replacements: { Orden_idOrden: idOrden },
+      }
+    );
+
+    res
+      .status(200)
+      .json({ mensaje: "Estado de la orden actualizado a 'Finalizado'" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Error al actualizar el estado de la orden" });
   }
 };

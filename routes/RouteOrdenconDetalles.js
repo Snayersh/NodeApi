@@ -10,10 +10,12 @@ const {
   nuevaordencondetalles,
   actualizaorden,
   obtenerordencondetalles,
+  EntregarOrdencondetalles,
+  eliminarOrdencondetalles,
   obtenerordencondetallesid,
 } = require("../controller/OrdenConDetalles");
 
-//ruta para insertar una nueva orden con detalles
+//ruta para insertar una nueva orden [con detalles
 router.post("/Orden", verificartoken, tokenoperadorycliente, nuevaordencondetalles);
 //ruta para actualizar una nueva orden
 router.put("/Orden/:id", verificartoken, tokenoperadores, actualizaorden);
@@ -26,10 +28,14 @@ router.get(
 );
 //ruta para listar orden con detalle por id
 router.get(
-  "/orden/:id",
+  "/Orden/:id",
   verificartoken,
   tokenoperadorycliente,
   obtenerordencondetallesid
 );
+//ruta para inactivar las ordenes
+router.post("/OrdenDel/:id",verificartoken,tokenoperadorycliente,eliminarOrdencondetalles)
+//ruta para Entregar las ordenes
+router.post("/OrdenEntregada/:id",verificartoken,tokenoperadores,EntregarOrdencondetalles)
 
 module.exports = router;

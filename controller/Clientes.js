@@ -40,22 +40,24 @@ exports.obtenerclientes = async (req, res) => {
 };
 
 exports.obtenerclientesid = async (req, res) => {
-  const { dato } = req.params;
+  const { id } = req.params;
   try {
-    if(!dato){return res.status(400).json({error:"Ingrese el id, nombre comercial o correo"})}
-    const clientes = await Clientes.findOne({ where: { [Op.or]: [
-              { idClientes: { [Op.like]: `%${dato}` } },
-              { nombre_comercial: { [Op.like]: `%${dato}%` } },
-              { email: { [Op.like]: `%${dato}%` } },
-            ], } });
-    if (!clientes) {
+    if (!id) {
+      return res.status(400).json({ error: "Ingrese el id del cliente" });
+    }
+    const cliente = await Clientes.findOne({
+      where: { idClientes: id }, 
+    });
+    if (!cliente) {
       return res.status(404).json({ error: "Cliente no encontrado" });
     }
-    res.status(200).json( clientes );
+    res.status(200).json(cliente);
   } catch (error) {
-    res.status(500).json({ error: "Error al obtgener el usuario por id" });
+    console.error(error); 
+    res.status(500).json({ error: "Error al obtener el cliente por id" });
   }
 };
+
 
 exports.actualizarclientes = async (req, res) => {
   const { id } = req.params;

@@ -25,7 +25,7 @@ router.post(
 //ruta para obtener todas las categorias no se coloca token para poder ver producto sin inciar sesion
 router.get("/CategoriaProductos",verificartoken,tokenoperadorycliente, obtenercategoria);
 //ruta para obtener categoria por id
-router.get("/CategoriaProductos/:id",verificartoken,tokenoperadorycliente, obtenerCategoriaConProductos);
+router.get("/CategoriayProductos/:id",verificartoken,tokenoperadorycliente, obtenerCategoriaConProductos);
 //ruta para actualizar una categoria
 router.put(
   "/CategoriaProductos/:id",

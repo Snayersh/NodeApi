@@ -1,4 +1,4 @@
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 const Productos = require("../models/modelProductos");
 const sequelize = require('../config/database')
 
@@ -17,40 +17,48 @@ exports.registrarproducto = async (req, res) => {
   } = req.body;
 
   try {
-    const fotoBinaria = Buffer.from(foto, 'base64'); 
+    const fotoBinaria = foto ? Buffer.from(foto, "base64") : null;
 
-await sequelize.query(
-  `EXEC p_insertarProductos 
-    @categoriaProductos_idCategoriaProducto = :CategoriaProductos_idCategoriaProducto,
-    @usuario_idusuario = :usuario_idusuario,
-    @nombre = :nombre,
-    @marca = :marca,
-    @codigo = :codigo,
-    @stock = :stock,
-    @estados_idestados = :estados_idestados,
-    @precio = :precio,
-    @foto = :foto`, 
-  {
-    replacements: {
-      CategoriaProductos_idCategoriaProducto,
-      usuario_idusuario,
-      nombre,
-      marca,
-      codigo,
-      stock,
-      estados_idestados,
-      precio,
-      foto: fotoBinaria,  
-    },
-    type: sequelize.QueryTypes.INSERT,
-  }
-);
+    if (fotoBinaria && fotoBinaria.length > 10 * 1024 * 1024) {
+      return res
+        .status(400)
+        .json({ error: "La imagen supera el tamaño máximo permitido de 10MB." });
+    }
 
-    res.status(201).json({ mensaje: "Producto registrado con exito" });
+    await sequelize.query(
+      `EXEC p_insertarProductos 
+        @CategoriaProductos_idCategoriaProducto = :CategoriaProductos_idCategoriaProducto,
+        @usuario_idusuario = :usuario_idusuario,
+        @nombre = :nombre,
+        @marca = :marca,
+        @codigo = :codigo,
+        @stock = :stock,
+        @estados_idestados = :estados_idestados,
+        @precio = :precio,
+        @foto = :foto`, 
+      {
+        replacements: {
+          CategoriaProductos_idCategoriaProducto,
+          usuario_idusuario,
+          nombre,
+          marca,
+          codigo,
+          stock,
+          estados_idestados,
+          precio,
+          foto: fotoBinaria,  
+        },
+        type: sequelize.QueryTypes.INSERT,
+      }
+    );
+
+    res.status(201).json({ mensaje: "Producto registrado con éxito" });
   } catch (error) {
-    res.status(500).json({ error: "Error al registrar un nuevo producto" });
+    console.error("Error al registrar el producto:", error); 
+    res.status(500).json({ error: `Error al registrar un nuevo producto: ${error.message}` });
   }
 };
+
 
 //obtener todos los productos
 exports.obtenerproductos = async (req, res) => {
@@ -68,9 +76,33 @@ exports.obtenerproductos = async (req, res) => {
   }
 };
 
+// Obtener un producto por id
+exports.obtenerproductoid = async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const producto = await Productos.findOne({
+      where: { idProdcutos: id },
+    });
+
+    if (!producto) {
+      return res.status(404).json({ error: "Producto no encontrado" });
+    }
+
+    const productoConFoto = {
+      ...producto.toJSON(),
+      foto: producto.foto ? `data:image/jpeg;base64,${producto.foto}` : null,
+    };
+
+    res.status(200).json(productoConFoto);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener el producto por id" });
+  }
+};
+
 //obtener producto por nombre
 exports.obtenerproductonombre = async (req, res) => {
-  const { nombre } = req.query;
+  const { nombre } = req.params;
   try {
     if (!nombre) {
       return res.status(400).json({ error: "Ingresa un nombre del producto" });
@@ -108,8 +140,8 @@ exports.actualizarproducto = async (req, res) => {
     const [resultado] = await sequelize.query(
       `EXEC p_actualizarproductos 
        @idProductos = :idProductos,
-       @categoriaProductos_idCategoriaProductos = :CategoriaProductos_idCategoriaProducto,
-       @idUsuario_idusuarios = :usuario_idusuario,
+       @CategoriaProductos_idCategoriaProductos = :CategoriaProductos_idCategoriaProducto,
+       @usuario_idusuario = :usuario_idusuario,
        @nombre = :nombre,
        @marca = :marca,
        @codigo = :codigo,

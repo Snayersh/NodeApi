@@ -12,14 +12,18 @@ const {
   obtenerproductonombre,
   actualizarproducto,
   eliminarproducto,
+  obtenerproductoid
 } = require("../controller/producto");
 
 //registrar un nuevo producto
-router.post("/Productos",verificartoken,tokenoperadores, registrarproducto);
+router.post("/Productos", registrarproducto);
 //ruta para obtener todos los productos
 router.get("/Productos",verificartoken,tokenoperadorycliente,obtenerproductos);
 //ruta para obtener producto con por nombre, id o marca
-router.get("/Productos/:nombre",verificartoken,tokenoperadorycliente,obtenerproductonombre);
+router.get("/Producto/:nombre",verificartoken,tokenoperadorycliente,obtenerproductonombre);
+//ruta para obtener por id
+router.get("/Producto/:id",verificartoken,tokenoperadorycliente,obtenerproductoid);
+
 //ruta para actualizar solo operadores
 router.put(
   "/Productos/:id",

@@ -44,7 +44,6 @@ exports.obtenercategoria = async (req, res) => {
 exports.obtenerCategoriaConProductos = async (req, res) => {
   const { id } = req.params;
   try {
-    // Obtener la categoría por id
     const categoria = await CategoriaP.findOne({
       where: { idCategoriaProductos: id },
     });
@@ -52,15 +51,13 @@ exports.obtenerCategoriaConProductos = async (req, res) => {
     if (!categoria) {
       return res.status(404).json({ error: "Categoría no encontrada" });
     }
-
-    // Obtener los productos relacionados con esa categoría
     const productos = await Producto.findAll({
-      where: { CategoriaProductos_idCategoriaProducto: id }, // Usando el campo correcto para la relación
+      where: { CategoriaProductos_idCategoriaProducto: id }, 
     });
 
     res.status(200).json({
       categoria,
-      productos, // Devolver tanto la categoría como los productos asociados
+      productos, 
     });
   } catch (error) {
     res.status(500).json({ error: "Error al obtener la categoría y productos" });
