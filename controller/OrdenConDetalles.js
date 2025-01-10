@@ -129,13 +129,13 @@ exports.obtenerordencondetallesid = async (req, res) => {
 
 // Cambiar el estado de una orden a pendiente
 exports.eliminarOrdencondetalles = async (req, res) => {
-  const { idOrden } = req.params;
+  const { id } = req.params;
 
   try {
     await sequelize.query(
-      `EXEC p_ActualizarEstadoPendiente @Orden_idOrden = :Orden_idOrden`,
+      `EXEC p_ActualizarEstadoPendiente @idOrden = :idOrden`,
       {
-        replacements: { Orden_idOrden: idOrden },
+        replacements: { idOrden: id },
       }
     );
 
@@ -151,13 +151,13 @@ exports.eliminarOrdencondetalles = async (req, res) => {
 
 // Cambiar el estado de una orden a finalizado
 exports.EntregarOrdencondetalles = async (req, res) => {
-  const { idOrden } = req.params;
+  const { id } = req.params;
 
   try {
     await sequelize.query(
-      `EXEC p_ActualizarEstadoFinalizado @Orden_idOrden = :Orden_idOrden`,
+      `EXEC p_ActualizarEstadoFinalizado @idOrden = :idOrden`,
       {
-        replacements: { Orden_idOrden: idOrden },
+        replacements: { idOrden: id },
       }
     );
 
@@ -165,8 +165,10 @@ exports.EntregarOrdencondetalles = async (req, res) => {
       .status(200)
       .json({ mensaje: "Estado de la orden actualizado a 'Finalizado'" });
   } catch (error) {
+    console.error("Error al entregar la orden:", error);
     res
       .status(500)
       .json({ error: "Error al actualizar el estado de la orden" });
   }
 };
+
